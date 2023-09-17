@@ -30,33 +30,42 @@ y_test = initial_dataframe.drop(columns_dropped, axis=1)
 
 # Assigning each genre a number
 unique_genres = initial_dataframe["top genre"].unique()
-genre_to_label = {genre: label for label, genre in enumerate(unique_genres)}
+genre_to_label = {genre: label for label, genre in enumerate(unique_genres)} 
 initial_dataframe["genre_label"] = initial_dataframe["top genre"].map(genre_to_label)
 
 model = RandomForestClassifier(criterion='entropy', n_estimators=100, max_depth=7, random_state=42)
-model.fit(x_train, y_train)
+model.fit(x_train, y_train) 
 
-y_pred = model.predict(x_test)
+#storing the predictions made from the trained model
+y_pred = model.predict(x_test) 
 
-print(y_pred)
+y_pred = y_pred.flatten()
 
-# Assuming you have a predicted genre label as an integer
-predicted_label = 2  # Replace with the actual integer label you have
+predicted_genre = []
+numeric_labels = list(genre_to_label.values())
 
-# Map the integer label to the corresponding genre string
-predicted_genre = next((genre for genre, label in genre_to_label.items() if label == predicted_label), None)
+# y_pred = list(y_pred)
 
-#prints as a String
-print("Predicted Genre:", predicted_genre)
+for num_pred in y_pred:
+    for label in numeric_labels:
+        if label == num_pred:
+            # Find the corresponding genre for the numeric label
+            predicted_genre.append(next((genre for genre, l in genre_to_label.items() if l == label), None))
 
-# accuracy = accuracy_score(y_test, y_pred)
+# Now, predicted_genre contains the corresponding genres for the predicted labels
+print(predicted_genre)
 
-# print (initial_dataframe)
-# print (initial_dataframe.columns)
+            
+    # # Map each integer label to the corresponding genre string
+    # predicted_genre = [genre for genre, label in genre_to_label.items() if label == num_pred]
 
+    # if predicted_genre:
+    #     # If there is a predicted genre (non-empty list), print the first one
+    #     print("Predicted Genre:", predicted_genre[0])
+    # else:
+    #     # Handle the case when there is no matching genre label
+    #     print("No matching genre found for label:", num_pred)
 
-#data visualization
+# Calculate accuracy
+#accuracy = accuracy_score(y_test, y_pred)
 
-# scikit-learn
-# regression for song popularity 
-# classification for genre
